@@ -53,22 +53,23 @@ void sendRfidLog(long cardid) {
     WiFiClient client; 
     HTTPClient http;
     String postData = "cardid=" + String(cardid);
-    http.begin(client, "http://192.168.0.108:3000/database");
+    http.begin(client, "https://portalsystem.onrender.com/attendance");
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");  
     int httpCode = http.POST(postData); 
     String payload = http.getString();
-    Serial.println(httpCode);
-    Serial.println(payload);
+    Serial.println("HTTP Response Code: " + String(httpCode));
+    Serial.println("Server Response: " + payload);
     
-    if(payload.equals("success")) {
+    if (httpCode == 200) {
       digitalWrite(SUCCESS_PIN, HIGH);
-      digitalWrite(BUZZER_PIN, HIGH);  // Activate the buzzer
-      analogWrite(BUZZER_PIN, 50);  // Adjust the value (0-255) for volume
-      delay(500);  // Buzzer activation duration (adjust as needed)
-      digitalWrite(BUZZER_PIN, LOW);   // Deactivate the buzzer
+      digitalWrite(BUZZER_PIN, HIGH);
+      analogWrite(BUZZER_PIN, 50); 
+      delay(200); 
+      digitalWrite(BUZZER_PIN, LOW); 
     } else {
       digitalWrite(ERROR_PIN, HIGH);
     }
+
     
     http.end();
   }
@@ -97,7 +98,7 @@ void loop() {
   }
   
   toggleConnStat();
-  delay (500);
+  delay (200);
   
   digitalWrite(SUCCESS_PIN, LOW);
   digitalWrite(ERROR_PIN, LOW);
